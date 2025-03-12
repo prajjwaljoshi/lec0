@@ -1,26 +1,31 @@
 import os
 import openai
 
-# Replace with your actual Azure OpenAI credentials
-openai.api_key = os.environ.get("AZURE_OPENAI_API_KEY")  # Use environment variable
+# Set Azure OpenAI credentials
+openai.api_type = "azure"
+openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")  # Fetch API key from env variables
 openai.api_base = "https://your-resource-name.openai.azure.com/"  # Your Azure OpenAI endpoint
-openai.api_version = "2023-12-01-preview"  # API version (check Azure for latest)
-deployment_name = "your-deployment-name"  # The name of the model deployment
+openai.api_version = "2023-12-01-preview"  # API version (check Azure portal for updates)
+
+# Set your deployment name (not model name)
+deployment_id = "your-deployment-name"
 
 try:
     response = openai.ChatCompletion.create(
-        engine=deployment_name,  # Azure requires the deployment name
-        messages=[{"role": "system", "content": "You are an AI assistant."},
-                  {"role": "user", "content": "Hello, how are you?"}],
-        max_tokens=5,  # Limit the generated text
+        deployment_id=deployment_id,  # Correct parameter for Azure
+        messages=[
+            {"role": "system", "content": "You are an AI assistant."},
+            {"role": "user", "content": "Hello, how are you?"}
+        ],
+        max_tokens=5,
         temperature=0.7
     )
+
+    print(response)  # Prints full API response
+    print(response['choices'][0]['message']['content'])  # Extracts AI response
     
-    print(response)  # Prints the raw API response
-    print(response['choices'][0]['message']['content'])  # Extracts the generated response
-    
-    print("Azure OpenAI API Key is working, and the model is accessible!")
+    print("Azure OpenAI API is working correctly!")
 
 except Exception as e:
     print(f"An error occurred: {e}")
-    print("Check your API key, deployment name, and endpoint.")
+    print("Check your API key, endpoint, deployment name, and internet connection.")
